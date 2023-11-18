@@ -23,17 +23,17 @@ export const App = () => {
     }
 
     async function getImages() {
-      const clearQuery = searchText.split('/').pop();
+      const newQuery = searchText.split('/').pop();
       try {
         setIsLoading(true);
         setIsError(false);
 
-        const newImages = await fetchImages(clearQuery, page);
+        const fetchedImages = await fetchImages(newQuery, page);
 
-        if (newImages.length === 0) {
+        if (fetchedImages.length === 0) {
           toast.error('No more images available');
         } else {
-          setImages(prevImages => [...prevImages, ...newImages]);
+          setImages(prevImages => [...prevImages, ...fetchedImages]);
         }
       } catch (error) {
         setIsError(true);
@@ -45,6 +45,7 @@ export const App = () => {
 
     getImages();
   }, [searchText, page]);
+  
 
   const handleSubmit = (value) => {
     setImages([]);
