@@ -3,6 +3,7 @@ import { Searchbar } from './Searchbar/Searchbar';
 import { List } from './ImageGallery/ImageGallery';
 import { LoadMoreButton } from './Button/Button';
 import { MainLoader } from './Loader/Loader';
+import { ErrorMess } from './Error/Error';
 import { Container } from './App.styled';
 import { fetchImages } from 'api';
 import { ToastContainer, toast } from 'react-toastify';
@@ -14,7 +15,7 @@ export const App = () => {
   const [searchText, setSearchText] = useState("");
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [ isError, setIsError] = useState(false);
+  const [ error, setError] = useState(false);
   
 
   useEffect(() => {
@@ -26,7 +27,7 @@ export const App = () => {
       const newQuery = searchText.split('/').pop();
       try {
         setIsLoading(true);
-        setIsError(false);
+        setError(false);
 
         const fetchedImages = await fetchImages(newQuery, page);
 
@@ -36,7 +37,7 @@ export const App = () => {
           setImages(prevImages => [...prevImages, ...fetchedImages]);
         }
       } catch (error) {
-        setIsError(true);
+        setError(true);
       } finally {
         setIsLoading(false);
         
@@ -45,7 +46,7 @@ export const App = () => {
 
     getImages();
   }, [searchText, page]);
-  
+
 
   const handleSubmit = (value) => {
     setImages([]);
@@ -60,6 +61,7 @@ export const App = () => {
   return (
     <Container>
       <Searchbar onSubmit={handleSubmit} />
+        {error && <ErrorMess />}
       {images.length > 0 && <List images={images} />}
       {isLoading && <MainLoader />}
       {images.length > 0 && !isLoading && (
