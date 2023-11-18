@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import { GlobalStyle } from 'GlobalStyle';
 import { Searchbar } from './Searchbar/Searchbar';
 import { List } from './ImageGallery/ImageGallery';
@@ -8,81 +7,67 @@ import { Container } from './App.styled';
 import { fetchImages } from 'api';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useState, useEffect } from 'react';
 
-export class App extends Component {
-  state = {
-    images: [],
-    searchText: '',
-    page: 1,
-    isLoading: false,
-    isError: false,
-  };
+export const App = () => {
+  const [images, setImages] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [totalHits, setTotalHits] = useState(0);
 
- handleSubmit = value => {
-  if (value.trim() === '') {
-    
-    toast.error('Please enter a search value');
-    return;
-  } else {
-    this.setState({
-      searchText: `${Date.now()}/${value}`,
-      page: 1,
-      images: [],
-    });
-  }
-};
+  useEffect(() => {
+    if (searchText === '') {
+      return;
+    }
 
-  handleLoadMore = () => {
-    this.setState(prevState => {
-      return {
-        page: prevState.page + 1,
-      };
-    });
-  };
-
-  async componentDidUpdate(prevProps, prevState) {
-    const { searchText, page } = this.state;
-    if (prevState.searchText !== searchText || prevState.page !== page) {
-      const valueAfterSlash = searchText.split('/').pop();
+    const searchedImages = async () => {
       try {
-        this.setState({ isLoading: true, isError: false });
-        const response = await fetchImages(valueAfterSlash, page);
+        setIsLoading(true);
+        setIsError(false);
+        const response = await fetchImages(searchText, page);
         const newImages = response.data.hits;
         const totalHits = response.data.totalHits;
 
         if (newImages.length === 0) {
           toast.error('No more images');
-        }
-        
-
-        else {
-          this.setState(prevState => ({
-            images: [...prevState.images, ...newImages],
-            totalHits,
-          }));
+        } else {
+          setImages((prevImages) => [...prevImages, ...newImages]);
+          setTotalHits(totalHits);
         }
       } catch (error) {
         toast.error('Oops! Something went wrong! Try reloading the page!');
-        this.setState({ isError: true });
+        setIsError(true);
       } finally {
-        this.setState({ isLoading: false });
+        setIsLoading(false);
       }
-    }
-  }
+    };
 
-  render() {
-    const { images, isLoading, totalHits } = this.state;
-    return (
-      <Container>
-        <Searchbar onSubmit={this.handleSubmit} />
-        {images.length > 0 && <List images={images} />}
-        {isLoading && <MainLoader />}
-        {images.length > 0 && !isLoading && totalHits > images.length && (
-          <LoadMoreButton onClick={this.handleLoadMore} />
-        )}
-        <GlobalStyle />
-         <ToastContainer />
-      </Container>
-    );
-  }
-}
+    searchedImages(); 
+
+  }, [searchText, page]); 
+
+  const handleSubmit = (value) => {
+    setImages([]);
+    setSearchText(`${Date.now()}/${value}`);
+    setPage(1);
+  };
+
+  const handleLoadMore = () => {
+    setPage((prevPage) => prevPage + 1);
+  };
+
+  return (
+    <Container>
+      <Searchbar onSubmit={handleSubmit} />
+      {images.length > 0 && <List images={images} />}
+      {isLoading && <MainLoader />}
+      {images.length > 0 && !isLoading && totalHits > images.length && (
+        <LoadMoreButton onClick={handleLoadMore} />
+      )}
+      <GlobalStyle />
+      <ToastContainer />
+    </Container>
+  );
+};
