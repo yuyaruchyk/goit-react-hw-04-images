@@ -1,5 +1,5 @@
 import { Error } from './Error.styled';
 
-export const ErrorMess = () => {
+export const ErrorMes = () => {
   return <Error>Oops! Something went wrong!</Error>;
 };

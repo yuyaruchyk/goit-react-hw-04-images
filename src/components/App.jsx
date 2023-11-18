@@ -3,7 +3,7 @@ import { Searchbar } from './Searchbar/Searchbar';
 import { List } from './ImageGallery/ImageGallery';
 import { LoadMoreButton } from './Button/Button';
 import { MainLoader } from './Loader/Loader';
-import { ErrorMess } from './Error/Error';
+import { ErrorMes } from './Error/Error';
 import { Container } from './App.styled';
 import { fetchImages } from 'api';
 import { ToastContainer, toast } from 'react-toastify';
@@ -61,7 +61,7 @@ export const App = () => {
   return (
     <Container>
       <Searchbar onSubmit={handleSubmit} />
-        {error && <ErrorMess />}
+        {error && <ErrorMes />}
       {images.length > 0 && <List images={images} />}
       {isLoading && <MainLoader />}
       {images.length > 0 && !isLoading && (
