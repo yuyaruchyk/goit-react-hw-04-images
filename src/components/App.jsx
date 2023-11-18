@@ -14,39 +14,37 @@ export const App = () => {
   const [searchText, setSearchText] = useState("");
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [totalHits, setTotalHits] = useState(0);
+  const [ isError, setIsError] = useState(false);
+  
 
   useEffect(() => {
     if (searchText === '') {
       return;
     }
 
-    const searchedImages = async () => {
+    async function getImages() {
+      const clearQuery = searchText.split('/').pop();
       try {
         setIsLoading(true);
         setIsError(false);
-        const response = await fetchImages(searchText, page);
-        const newImages = response.data.hits;
-        const totalHits = response.data.totalHits;
+
+        const newImages = await fetchImages(clearQuery, page);
 
         if (newImages.length === 0) {
-          toast.error('No more images');
+          toast.error('No more images available');
         } else {
-          setImages((prevImages) => [...prevImages, ...newImages]);
-          setTotalHits(totalHits);
+          setImages(prevImages => [...prevImages, ...newImages]);
         }
       } catch (error) {
-        toast.error('Oops! Something went wrong! Try reloading the page!');
         setIsError(true);
       } finally {
         setIsLoading(false);
+        
       }
-    };
+    }
 
-    searchedImages(); 
-
-  }, [searchText, page]); 
+    getImages();
+  }, [searchText, page]);
 
   const handleSubmit = (value) => {
     setImages([]);
@@ -63,7 +61,7 @@ export const App = () => {
       <Searchbar onSubmit={handleSubmit} />
       {images.length > 0 && <List images={images} />}
       {isLoading && <MainLoader />}
-      {images.length > 0 && !isLoading && totalHits > images.length && (
+      {images.length > 0 && !isLoading && (
         <LoadMoreButton onClick={handleLoadMore} />
       )}
       <GlobalStyle />

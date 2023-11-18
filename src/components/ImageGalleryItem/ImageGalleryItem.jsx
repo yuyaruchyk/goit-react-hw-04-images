@@ -1,8 +1,8 @@
-
 import { GalleryImage, Image } from './ImageGalleryItem.styled';
 import { ModalWindow } from '../Modal/Modal';
+import { useState } from 'react';
 
-export const GalleryItem = () => {
+export const GalleryItem = ({ img, tags, largeImg }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
