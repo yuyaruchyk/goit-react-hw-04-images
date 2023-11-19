@@ -31,10 +31,10 @@ export const App = () => {
 
         const fetchedImages = await fetchImages(newQuery, page);
 
-        if (fetchedImages.length === 0) {
+        if (fetchedImages.hits.length === 0) {
           toast.error('No more images available');
         } else {
-          setImages(prevImages => [...prevImages, ...fetchedImages]);
+          setImages(prevImages => [...prevImages, ...fetchedImages.hits]);
         }
       } catch (error) {
         setError(true);

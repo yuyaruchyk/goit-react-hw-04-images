@@ -8,5 +8,5 @@ export const fetchImages = async (searchText, page) => {
   const response = await axios.get(
     `?q=${searchText}&page=${page}&key=${ApiKey}&image_type=photo&orientation=horizontal&per_page=12`
   );
-  return response.data.hits;
+  return response.data;
 };
